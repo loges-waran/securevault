@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101513">
+  <meta name="description" content="Encrypt and decrypt files locally with AES-256-GCM.">
+  <title>SecureVault | Private file encryption</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="SecureVault home">
+        <span class="brand-mark" aria-hidden="true">SV</span>
+        <span class="brand-name">Secure<span>Vault</span></span>
+      </a>
+      <div class="local-indicator"><span class="status-dot"></span> PRIVATE SESSION</div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="eyebrow-line"></span> PERSONAL FILE SECURITY</p>
+        <h1 id="page-title">Your files.<br><em>Your keys.</em></h1>
+        <p class="intro-copy">Protect a file with authenticated encryption, or unlock one you already secured.</p>
+      </section>
+
+      <section class="workspace" aria-label="File encryption workspace">
+        <div class="work-area">
+          <div class="mode-switch" role="tablist" aria-label="Choose an operation">
+            <button class="mode-tab is-active" id="encrypt-tab" type="button" role="tab" aria-selected="true" aria-controls="file-form" data-mode="encrypt">
+              <span class="tab-glyph" aria-hidden="true">01</span> Encrypt
+            </button>
+            <button class="mode-tab" id="decrypt-tab" type="button" role="tab" aria-selected="false" aria-controls="file-form" data-mode="decrypt">
+              <span class="tab-glyph" aria-hidden="true">02</span> Decrypt
+            </button>
+          </div>
+
+          <form id="file-form" class="file-form" novalidate>
+            <div class="section-heading">
+              <div>
+                <p class="step-label" id="operation-step">OPERATION 01</p>
+                <h2 id="operation-title">Encrypt a file</h2>
+              </div>
+              <span class="algorithm-tag">AES-256-GCM</span>
+            </div>
+
+            <label class="drop-zone" id="drop-zone" for="file-input">
+              <input id="file-input" name="file" type="file" hidden>
+              <span class="upload-symbol" aria-hidden="true">
+                <span class="upload-arrow"></span>
+                <span class="upload-tray"></span>
+              </span>
+              <span class="drop-copy">
+                <strong id="file-prompt">Drop your file here</strong>
+                <span id="file-detail">or <u>browse files</u> · up to 50 MiB</span>
+              </span>
+              <span class="file-chip" id="file-chip" hidden></span>
+            </label>
+
+            <div class="password-heading">
+              <label for="password-input">Password</label>
+              <span id="password-hint">8 characters minimum</span>
+            </div>
+            <div class="password-field">
+              <span class="key-mark" aria-hidden="true">&#9672;</span>
+              <input id="password-input" name="password" type="password" autocomplete="new-password" placeholder="Create a strong passphrase" required>
+              <button class="visibility-toggle" id="visibility-toggle" type="button" aria-label="Show password">Show</button>
+            </div>
+
+            <button class="submit-button" id="submit-button" type="submit">
+              <span id="submit-label">Encrypt file</span>
+              <span class="button-arrow" aria-hidden="true">&#8599;</span>
+            </button>
+            <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+          </form>
+        </div>
+
+        <aside class="security-panel" aria-label="Encryption details">
+          <div class="panel-topline"><span>PROTECTION PROFILE</span><span class="panel-index">SV / 01</span></div>
+          <div class="lock-illustration" aria-hidden="true">
+            <div class="lock-orbit orbit-one"></div>
+            <div class="lock-orbit orbit-two"></div>
+            <div class="lock-core"><span class="lock-shackle"></span><span class="lock-body"><i></i></span></div>
+            <span class="orbit-node node-one"></span>
+            <span class="orbit-node node-two"></span>
+            <span class="orbit-node node-three"></span>
+          </div>
+          <div class="profile-copy">
+            <p class="profile-kicker">AUTHENTICATED ENCRYPTION</p>
+            <h2>Sealed at the source.</h2>
+            <p>Every file gets a fresh random salt and nonce. A password-derived key protects both its contents and integrity.</p>
+          </div>
+          <div class="profile-specs">
+            <div><span>KEY DERIVATION</span><strong>Scrypt</strong></div>
+            <div><span>KEY STORAGE</span><strong>Never stored</strong></div>
+            <div><span>FILE HANDLING</span><strong>In memory only</strong></div>
+          </div>
+          <div class="panel-foot"><span class="pulse-dot"></span> PASSWORD IS NEVER STORED</div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer"><span>SECUREVAULT <span class="footer-divider">/</span> AES-GCM FILE TOOL</span><span>FILES ARE NOT SAVED ON THE SERVER</span></footer>
+  </div>
+</body>
+</html>
