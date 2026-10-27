@@ -1,9 +1,13 @@
 """End-to-end tests for SecureVault's file API."""
 
 import io
+import os
 import unittest
+from unittest.mock import patch
 
-from backend.app import app
+from flask import request
+
+from backend.app import app, run_server
 from backend.crypto import MAGIC, decrypt_file, encrypt_file
 
 
@@ -86,8 +90,6 @@ class SecureVaultTests(unittest.TestCase):
         self.assertIn("at least 8", response.get_json()["error"])
 
     def test_server_rejects_files_over_the_size_limit(self):
-        from unittest.mock import patch
-
         with patch("backend.app.MAX_UPLOAD_BYTES", 4):
             response = self.client.post(
                 "/api/encrypt",
@@ -102,8 +104,6 @@ class SecureVaultTests(unittest.TestCase):
         self.assertIn("50 MiB", response.get_json()["error"])
 
     def test_oversized_multipart_request_returns_json_error(self):
-        from unittest.mock import patch
-
         with patch.dict(app.config, {"MAX_CONTENT_LENGTH": 128}):
             response = self.client.post(
                 "/api/encrypt",
@@ -120,6 +120,30 @@ class SecureVaultTests(unittest.TestCase):
     def test_invalid_container_is_rejected(self):
         with self.assertRaises(ValueError):
             decrypt_file(b"not a SecureVault container", "any password")
+
+    def test_health_check_is_available(self):
+        response = self.client.get("/healthz")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"status": "ok"})
+
+    def test_upload_stream_uses_memory_only(self):
+        with app.test_request_context("/"):
+            stream = request._get_file_stream(
+                10 * 1024 * 1024,
+                "application/octet-stream",
+                "large-file.bin",
+            )
+
+        self.assertIsInstance(stream, io.BytesIO)
+        stream.close()
+
+    def test_development_server_uses_render_port_and_public_bind(self):
+        with patch.dict(os.environ, {"PORT": "10000"}):
+            with patch("backend.app.app.run") as run:
+                run_server()
+
+        run.assert_called_once_with(host="0.0.0.0", port=10000, debug=False)
 
 
 if __name__ == "__main__":

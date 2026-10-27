@@ -36,7 +36,7 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Choose **Encrypt** or **Dec
 python -m unittest backend.test_app -v
 ```
 
-The tests cover encrypted downloads, byte-for-byte recovery, independent salts/nonces, invalid containers, password validation, and incorrect-password handling.
+The tests cover encrypted downloads, byte-for-byte recovery, independent salts/nonces, invalid containers, password validation, incorrect-password handling, the health check, in-memory uploads, and Render's bind/port behavior.
 
 ## Encryption format and security
 

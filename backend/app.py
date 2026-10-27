@@ -1,8 +1,16 @@
 """Flask routes for SecureVault's in-memory file workflow."""
 
+import os
 from io import BytesIO
 
-from flask import Flask, jsonify, request, send_file, send_from_directory
+from flask import (
+    Flask,
+    Request as FlaskRequest,
+    jsonify,
+    request,
+    send_file,
+    send_from_directory,
+)
 from werkzeug.utils import secure_filename
 
 from .crypto import InvalidEncryptedFile, decrypt_file, encrypt_file
@@ -10,7 +18,20 @@ from .crypto import InvalidEncryptedFile, decrypt_file, encrypt_file
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 MIN_PASSWORD_LENGTH = 8
 
+
+class InMemoryRequest(FlaskRequest):
+    def _get_file_stream(
+        self,
+        total_content_length: int | None,
+        content_type: str | None,
+        filename: str | None = None,
+        content_length: int | None = None,
+    ) -> BytesIO:
+        return BytesIO()
+
+
 app = Flask(__name__, static_folder="../frontend", static_url_path="/assets")
+app.request_class = InMemoryRequest
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_BYTES + 1024 * 1024
 
 
@@ -30,6 +51,11 @@ def add_security_headers(response):
 @app.get("/")
 def index():
     return send_from_directory(app.static_folder, "index.html")
+
+
+@app.get("/healthz")
+def health():
+    return jsonify(status="ok")
 
 
 def _error(message: str, status: int):
@@ -91,5 +117,9 @@ def file_too_large(_exception):
     return _error("Files must be 50 MiB or smaller.", 413)
 
 
+def run_server() -> None:
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "5000")), debug=False)
+
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    run_server()
